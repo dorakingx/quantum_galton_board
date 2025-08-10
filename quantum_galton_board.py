@@ -95,7 +95,7 @@ class QuantumGaltonBoard:
             for i in range(0, self.num_qubits, 2):
                 qc.h(i)
             for i in range(1, self.num_qubits, 2):
-                qc.h(i)
+            qc.h(i)
         
         elif optimization_level == 2:
             # Level 2: Add error mitigation
@@ -790,7 +790,7 @@ class QuantumGaltonBoard:
         plt.tight_layout()
         
         if save_path:
-            plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
         
         # plt.show()  # 表示を無効化
 
