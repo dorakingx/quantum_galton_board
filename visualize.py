@@ -195,7 +195,7 @@ def compare_noise_levels(run_dir):
     fig, axes = plt.subplots(2, 2, figsize=(15, 12))
     x = np.arange(len(target_short))
     
-    colors = {'noiseless': 'green', 'low': 'orange', 'medium': 'red', 'high': 'purple'}
+    colors = {'noiseless': 'green', 'low': 'blue', 'high': 'red'}
     
     for i, (noise_type, result) in enumerate(results.items()):
         row, col = i // 2, i % 2
@@ -388,7 +388,7 @@ def create_gaussian_layer_comparison(results, output_dir):
     layer_data = results['gaussian']['layer_results']
     comparison_layers = [2, 4, 6, 8]
     noise_levels = ['noiseless', 'low', 'high']
-    colors = {'target': 'black', 'noiseless': 'blue', 'low': 'orange', 'high': 'red'}
+    colors = {'target': 'black', 'noiseless': 'green', 'low': 'blue', 'high': 'red'}
     
     for i, layer in enumerate(comparison_layers):
         row, col = i // 2, i % 2
@@ -448,7 +448,7 @@ def create_exponential_layer_comparison(results, output_dir):
     layer_data = results['exponential']['layer_results']
     comparison_layers = [2, 4, 6, 8]
     noise_levels = ['noiseless', 'low', 'high']
-    colors = {'target': 'black', 'noiseless': 'blue', 'low': 'orange', 'high': 'red'}
+    colors = {'target': 'black', 'noiseless': 'green', 'low': 'blue', 'high': 'red'}
     
     for i, layer in enumerate(comparison_layers):
         row, col = i // 2, i % 2
@@ -522,7 +522,7 @@ def create_hadamard_layer_comparison(results, output_dir):
     layer_data = results['hadamard']['layer_results']
     comparison_layers = [2, 4, 6, 8]
     noise_levels = ['noiseless', 'low', 'high']
-    colors = {'target': 'black', 'noiseless': 'blue', 'low': 'orange', 'high': 'red'}
+    colors = {'target': 'black', 'noiseless': 'green', 'low': 'blue', 'high': 'red'}
     
     for i, layer in enumerate(comparison_layers):
         row, col = i // 2, i % 2
@@ -588,7 +588,7 @@ def create_combined_layer_comparison(results, output_dir):
     distributions = ['gaussian', 'exponential', 'hadamard']
     comparison_layers = [2, 4, 6, 8]
     noise_levels = ['noiseless', 'low', 'high']
-    colors = {'target': 'black', 'noiseless': 'blue', 'low': 'orange', 'high': 'red'}
+    colors = {'target': 'black', 'noiseless': 'green', 'low': 'blue', 'high': 'red'}
     
     for i, dist_type in enumerate(distributions):
         if dist_type not in results:
@@ -670,8 +670,8 @@ def create_layer_metrics_comparison(results, output_dir):
     
     distributions = ['gaussian', 'exponential', 'hadamard']
     comparison_layers = [2, 4, 6, 8]
-    noise_levels = ['low', 'medium', 'high']
-    colors = {'low': 'blue', 'medium': 'orange', 'high': 'red'}
+    noise_levels = ['noiseless', 'low', 'high']
+    colors = {'noiseless': 'green', 'low': 'blue', 'high': 'red'}
     
     for i, dist_type in enumerate(distributions):
         if dist_type not in results:
@@ -982,8 +982,8 @@ def create_metric_scaling_plots(results, output_dir):
     
     distributions = ['gaussian', 'exponential', 'hadamard']
     metrics = ['tv', 'hellinger', 'kl', 'wasserstein']
-    noise_levels = ['low', 'medium', 'high']
-    colors = {'low': 'blue', 'medium': 'orange', 'high': 'red'}
+    noise_levels = ['noiseless', 'low', 'high']
+    colors = {'noiseless': 'green', 'low': 'blue', 'high': 'red'}
     
     for dist_type in distributions:
         if dist_type not in results:
