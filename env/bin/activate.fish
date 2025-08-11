@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/Users/hatanakatomoya/Developer/Sim/womanium_quantum2025/env"
+set -gx VIRTUAL_ENV "/Users/hatanakatomoya/Developer/Sim/womanium_quantum2025/quantum_galton_board/env"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH

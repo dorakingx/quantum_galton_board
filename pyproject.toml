@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quantum_galton_board"
+version = "0.1.0"
+description = "Quantum Galton Board implementation based on Carney-Varcoe paper"
+authors = [{name = "Quantum Galton Board Team"}]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "qiskit>=1.2",
+    "qiskit-aer>=0.14",
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "matplotlib>=3.6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "black>=23.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+qgb = "qgb.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"

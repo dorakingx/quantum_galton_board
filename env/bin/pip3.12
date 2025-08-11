@@ -1,4 +1,4 @@
-#!/Users/hatanakatomoya/Developer/Sim/womanium_quantum2025/env/bin/python3.12
+#!/Users/hatanakatomoya/Developer/Sim/womanium_quantum2025/quantum_galton_board/env/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys
