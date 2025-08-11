@@ -397,11 +397,155 @@ quantum_galton_board/
    - Automatic data regeneration for missing or outdated results
    - Robust data loading with fallback mechanisms
 
+## 📚 Literature Review: Quantum Walks
+
+### Historical Development
+
+Quantum walks represent a quantum analogue of classical random walks, first introduced by Aharonov et al. (1993) and later formalized by Meyer (1996). The field has evolved significantly over the past three decades, with applications spanning quantum algorithms, quantum simulation, and quantum machine learning.
+
+### Key Theoretical Foundations
+
+#### 1. **Discrete-Time Quantum Walks (DTQW)**
+- **Coin-Based Model**: Introduced by Aharonov et al. (2001)
+  - Uses a quantum coin (2-level system) to control walk direction
+  - Coin state: |0⟩ (left) or |1⟩ (right)
+  - Evolution: U = S · (I ⊗ C), where S is shift operator, C is coin operator
+- **Hadamard Walk**: Most studied variant using Hadamard coin H = (|0⟩⟨0| + |0⟩⟨1| + |1⟩⟨0| - |1⟩⟨1|)/√2
+- **Ballistic Spreading**: Quadratic speedup compared to classical random walks
+
+#### 2. **Continuous-Time Quantum Walks (CTQW)**
+- **Hamiltonian Evolution**: Introduced by Farhi and Gutmann (1998)
+  - Evolution: |ψ(t)⟩ = e^(-iHt)|ψ(0)⟩
+  - H = -γA, where A is adjacency matrix, γ is hopping rate
+- **Graph-Based**: Naturally defined on graphs
+- **Quantum Adiabatic Algorithm**: Foundation for quantum optimization
+
+### Quantum Walk Variants
+
+#### 1. **Hadamard Quantum Walk**
+- **Symmetric Initial State**: |ψ₀⟩ = (|0⟩ + i|1⟩)/√2
+- **Characteristic Distribution**: Double-peaked structure with quantum interference
+- **Applications**: Quantum search algorithms, quantum simulation
+- **Implementation**: Our project uses absorption chain method for QGB implementation
+
+#### 2. **Coined Quantum Walks**
+- **General Coin Operators**: U(θ,φ,λ) = Rz(φ)Ry(θ)Rz(λ)
+- **Phase Walks**: Special case with diagonal coin operators
+- **Bounded Walks**: With absorbing boundaries or measurement
+
+#### 3. **Quantum Walks on Graphs**
+- **Regular Graphs**: Hypercubes, cycles, lattices
+- **Irregular Graphs**: Complex networks, random graphs
+- **Directed Graphs**: Quantum walks with directionality
+
+### Quantum Walk Applications
+
+#### 1. **Quantum Algorithms**
+- **Grover's Algorithm**: Can be formulated as quantum walk
+- **Quantum Search**: Quadratic speedup on graphs
+- **Quantum Simulation**: Simulating quantum systems
+- **Quantum Machine Learning**: Quantum feature maps and kernels
+
+#### 2. **Quantum Simulation**
+- **Boson Sampling**: Quantum walk implementation
+- **Quantum Chemistry**: Molecular dynamics simulation
+- **Condensed Matter**: Transport phenomena, localization
+
+#### 3. **Quantum Information Processing**
+- **State Transfer**: Perfect state transfer on graphs
+- **Entanglement Generation**: Creating entangled states
+- **Quantum Communication**: Quantum routing protocols
+
+### Experimental Implementations
+
+#### 1. **Photonic Systems**
+- **Linear Optics**: Beam splitters and phase shifters
+- **Integrated Photonics**: Waveguide arrays
+- **Time-Multiplexed**: Single-photon time-bin encoding
+
+#### 2. **Trapped Ions**
+- **Internal States**: Coin degrees of freedom
+- **Vibrational Modes**: Position space
+- **High Fidelity**: Excellent quantum control
+
+#### 3. **Superconducting Circuits**
+- **Transmon Qubits**: Coin and position qubits
+- **Microwave Control**: High-speed operations
+- **Scalability**: Potential for large-scale implementation
+
+### Quantum Walk in Quantum Galton Board Context
+
+#### 1. **Theoretical Connection**
+- **Classical Galton Board**: Binomial distribution from random walk
+- **Quantum Galton Board**: Quantum interference patterns
+- **Hadamard Walk**: Natural quantum analogue with interference
+
+#### 2. **Implementation Approach**
+- **Absorption Chain Method**: Our preferred approach for QGB
+- **Angle Synthesis**: Converting target distributions to quantum angles
+- **Measurement Strategy**: Mid-circuit measurements for path decisions
+
+#### 3. **Advantages of Quantum Approach**
+- **Quantum Interference**: Superposition and entanglement effects
+- **Exponential Speedup**: Potential for quantum advantage
+- **Rich Dynamics**: Complex probability distributions
+
+### Current Research Directions
+
+#### 1. **Noise and Decoherence**
+- **Error Mitigation**: Techniques for noisy quantum devices
+- **Decoherence Effects**: Impact on quantum walk dynamics
+- **Fault Tolerance**: Error correction for quantum walks
+
+#### 2. **Scalability and Implementation**
+- **Large-Scale Systems**: Quantum walks on many qubits
+- **Hybrid Classical-Quantum**: Classical-quantum hybrid algorithms
+- **Quantum-Classical Interface**: Measurement and feedback
+
+#### 3. **Applications in Quantum Computing**
+- **Quantum Machine Learning**: Quantum feature maps
+- **Quantum Optimization**: Combinatorial optimization problems
+- **Quantum Simulation**: Complex quantum systems
+
+### Comparison with Classical Random Walks
+
+| Aspect | Classical Random Walk | Quantum Walk |
+|--------|---------------------|--------------|
+| **Spreading** | Linear (√t) | Ballistic (t) |
+| **Interference** | None | Quantum interference |
+| **Entanglement** | None | Natural entanglement |
+| **Reversibility** | Irreversible | Reversible |
+| **Measurement** | Non-destructive | Destructive |
+| **Applications** | Diffusion, Brownian motion | Quantum algorithms, simulation |
+
+### Future Research Opportunities
+
+1. **Quantum Walk Variants**: Exploring new coin operators and graph structures
+2. **Noise-Resilient Implementations**: Robust quantum walks on noisy devices
+3. **Hybrid Algorithms**: Combining quantum walks with classical optimization
+4. **Quantum Advantage**: Demonstrating quantum advantage in specific applications
+5. **Hardware Integration**: Implementing quantum walks on real quantum devices
+
 ## 📚 References
 
 - **Primary Reference**: Carney, D., & Varcoe, B. (2022). Universal Statistical Simulator. arXiv:2202.01735
+- **Quantum Walks - Foundational Papers**:
+  - Aharonov, Y., et al. (1993). Quantum random walks. Physical Review A, 48(2), 1687.
+  - Meyer, D. A. (1996). From quantum cellular automata to quantum lattice gases. Journal of Statistical Physics, 85(5-6), 551-574.
+  - Aharonov, Y., et al. (2001). Quantum random walks. Physical Review A, 64(4), 042307.
+  - Farhi, E., & Gutmann, S. (1998). Quantum computation and decision trees. Physical Review A, 58(2), 915.
+- **Quantum Walks - Comprehensive Reviews**:
+  - Kempe, J. (2003). Quantum random walks - an introductory overview. Contemporary Physics, 44(4), 307-327.
+  - Venegas-Andraca, S. E. (2012). Quantum walks: a comprehensive review. Quantum Information Processing, 11(5), 1015-1106.
+  - Portugal, R. (2018). Quantum walks and search algorithms. Springer.
+- **Experimental Implementations**:
+  - Perets, H. B., et al. (2008). Realization of quantum walks with negligible decoherence in waveguide lattices. Physical Review Letters, 100(17), 170506.
+  - Schreiber, A., et al. (2010). Photons walking the line: a quantum walk with adjustable coin operations. Physical Review Letters, 104(5), 050502.
+  - Zähringer, F., et al. (2010). Realization of a quantum walk with one and two trapped ions. Physical Review Letters, 104(10), 100503.
+- **Quantum Walks in Quantum Computing**:
+  - Childs, A. M. (2009). Universal computation by quantum walk. Physical Review Letters, 102(18), 180501.
+  - Childs, A. M., et al. (2013). Spatial search by quantum walk. Physical Review A, 87(3), 032314.
 - **Qiskit Documentation**: https://qiskit.org/documentation/
-- **Quantum Walks**: Kempe, J. (2003). Quantum random walks - an introductory overview
 
 ## 🤝 Contributing
 
