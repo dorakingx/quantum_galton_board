@@ -715,19 +715,19 @@ def create_layer_metrics_comparison(results, output_dir):
     print(f"Created layer metrics comparison plot: {filename}")
 
 def create_distance_layer_scaling_plot(results, output_dir):
-    """Create distance layer scaling plots for each distribution."""
+    """Create distance layer scaling plots for each distribution with error bars."""
     
     distributions = ['gaussian', 'exponential', 'hadamard']
     metrics = ['tv', 'hellinger', 'kl', 'wasserstein']
-    noise_levels = ['low', 'medium', 'high']
-    colors = {'low': 'blue', 'medium': 'orange', 'high': 'red'}
+    noise_levels = ['noiseless', 'low', 'high']
+    colors = {'noiseless': 'green', 'low': 'blue', 'high': 'red'}
     
     for dist_type in distributions:
         if dist_type not in results:
             continue
             
         fig, axes = plt.subplots(2, 2, figsize=(16, 12))
-        fig.suptitle(f'{dist_type.title()} Distribution - Distance Layer Scaling', fontsize=16, fontweight='bold')
+        fig.suptitle(f'{dist_type.title()} Distribution - Distance Layer Scaling (with 95% CI)', fontsize=16, fontweight='bold')
         
         layer_data = results[dist_type]['layer_results']
         
@@ -747,6 +747,7 @@ def create_distance_layer_scaling_plot(results, output_dir):
                     continue
                     
                 metric_values = []
+                metric_errors = []
                 available_layers = []
                 
                 for layer in layers:
@@ -755,11 +756,30 @@ def create_distance_layer_scaling_plot(results, output_dir):
                         value = layer_data[level][str(layer)][metric]
                         metric_values.append(value)
                         available_layers.append(layer)
+                        
+                        # Get bootstrap confidence interval if available
+                        if 'bootstrap' in layer_data[level][str(layer)]:
+                            bootstrap_data = layer_data[level][str(layer)]['bootstrap']
+                            if metric in bootstrap_data:
+                                lower = bootstrap_data[metric]['lower']
+                                upper = bootstrap_data[metric]['upper']
+                                # Calculate error bar as half the confidence interval width
+                                error = (upper - lower) / 2
+                                metric_errors.append(error)
+                            else:
+                                metric_errors.append(0)
+                        else:
+                            metric_errors.append(0)
                 
                 if metric_values:
-                    ax.plot(available_layers, metric_values, 'o-', 
-                           label=f'{level.title()} Noise', color=colors[level], 
-                           linewidth=2, markersize=6)
+                    if any(metric_errors):  # If we have error bars
+                        ax.errorbar(available_layers, metric_values, yerr=metric_errors, 
+                                  fmt='o-', label=f'{level.title()} Noise', color=colors[level], 
+                                  linewidth=2, markersize=6, capsize=5, capthick=2)
+                    else:  # Fallback to regular plot
+                        ax.plot(available_layers, metric_values, 'o-', 
+                               label=f'{level.title()} Noise', color=colors[level], 
+                               linewidth=2, markersize=6)
             
             ax.set_title(f'{metric.upper()} Distance', fontweight='bold')
             ax.set_xlabel('Number of Layers')
@@ -772,18 +792,18 @@ def create_distance_layer_scaling_plot(results, output_dir):
         plt.savefig(filename, dpi=300, bbox_inches='tight')
         plt.close()
         
-        print(f"Created {dist_type} distance layer scaling plot: {filename}")
+        print(f"Created {dist_type} distance layer scaling plot with error bars: {filename}")
 
 def create_combined_distance_layer_scaling_plot(results, output_dir):
-    """Create combined distance layer scaling plot with all distributions in one graph."""
+    """Create combined distance layer scaling plot with all distributions in one graph with error bars."""
     
     distributions = ['gaussian', 'exponential', 'hadamard']
     metrics = ['tv', 'hellinger', 'kl', 'wasserstein']
-    noise_levels = ['low', 'medium', 'high']
-    colors = {'low': 'blue', 'medium': 'orange', 'high': 'red'}
+    noise_levels = ['noiseless', 'low', 'high']
+    colors = {'noiseless': 'green', 'low': 'blue', 'high': 'red'}
     
     fig, axes = plt.subplots(3, 4, figsize=(20, 15))
-    fig.suptitle('Combined Distance Layer Scaling - All Distributions', fontsize=18, fontweight='bold')
+    fig.suptitle('Combined Distance Layer Scaling - All Distributions (with 95% CI)', fontsize=18, fontweight='bold')
     
     for i, dist_type in enumerate(distributions):
         if dist_type not in results:
@@ -806,6 +826,7 @@ def create_combined_distance_layer_scaling_plot(results, output_dir):
                     continue
                     
                 metric_values = []
+                metric_errors = []
                 available_layers = []
                 
                 for layer in layers:
@@ -814,11 +835,30 @@ def create_combined_distance_layer_scaling_plot(results, output_dir):
                         value = layer_data[level][str(layer)][metric]
                         metric_values.append(value)
                         available_layers.append(layer)
+                        
+                        # Get bootstrap confidence interval if available
+                        if 'bootstrap' in layer_data[level][str(layer)]:
+                            bootstrap_data = layer_data[level][str(layer)]['bootstrap']
+                            if metric in bootstrap_data:
+                                lower = bootstrap_data[metric]['lower']
+                                upper = bootstrap_data[metric]['upper']
+                                # Calculate error bar as half the confidence interval width
+                                error = (upper - lower) / 2
+                                metric_errors.append(error)
+                            else:
+                                metric_errors.append(0)
+                        else:
+                            metric_errors.append(0)
                 
                 if metric_values:
-                    ax.plot(available_layers, metric_values, 'o-', 
-                           label=f'{level.title()} Noise', color=colors[level], 
-                           linewidth=2, markersize=6)
+                    if any(metric_errors):  # If we have error bars
+                        ax.errorbar(available_layers, metric_values, yerr=metric_errors, 
+                                  fmt='o-', label=f'{level.title()} Noise', color=colors[level], 
+                                  linewidth=2, markersize=6, capsize=5, capthick=2)
+                    else:  # Fallback to regular plot
+                        ax.plot(available_layers, metric_values, 'o-', 
+                               label=f'{level.title()} Noise', color=colors[level], 
+                               linewidth=2, markersize=6)
             
             ax.set_title(f'{dist_type.title()} - {metric.upper()} Distance', fontweight='bold')
             ax.set_xlabel('Number of Layers')
@@ -831,7 +871,7 @@ def create_combined_distance_layer_scaling_plot(results, output_dir):
     plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close()
     
-    print(f"Created combined distance layer scaling plot: {filename}")
+    print(f"Created combined distance layer scaling plot with error bars: {filename}")
 
 def create_metric_comparison_plots(results, output_dir):
     """Create metric comparison plots for each metric."""

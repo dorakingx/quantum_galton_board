@@ -15,7 +15,7 @@ from datetime import datetime
 from qgb.circuits import (
     build_qgb_tree, build_qgb_gaussian, angles_for_geometric, angles_for_exponential, 
     angles_by_binary_split, angles_for_geometric_lambda, angles_for_truncated_exponential,
-    angles_for_hadamard_walk
+    angles_for_hadamard_walk, angles_for_binomial
 )
 from qgb.targets import binomial_target, exponential_target, hadamard_walk_target
 from qgb.samplers import sample_counts, simulate_noisy, process_tree_counts, process_gaussian_counts
@@ -33,9 +33,9 @@ def run_single_experiment(experiment_type, **kwargs):
         
         # Build circuit using traditional Gaussian approach
         print("Using traditional Gaussian (right-count = bin) approach...")
-        # Use pi/2 for unbiased coin (p=0.5 for right move)
-        # This should give binomial distribution with peak at layers/2
-        circuit = build_qgb_gaussian(layers, np.pi/2)
+        # Use angles_for_binomial for correct binomial distribution
+        angles = angles_for_binomial(layers, p=0.5)
+        circuit = build_qgb_gaussian(layers, angles)
         target = binomial_target(layers)
         
     elif experiment_type == "exponential":
@@ -462,7 +462,8 @@ def test_layer_scaling(experiment_type, max_layers, noise_level, shots, lambda_p
             if experiment_type == "gaussian":
                 # Gaussian distribution
                 target = binomial_target(layers)
-                circuit = build_qgb_gaussian(layers, np.pi/2)
+                angles = angles_for_binomial(layers, p=0.5)
+                circuit = build_qgb_gaussian(layers, angles)
                 counts = simulate_noisy(circuit, noise_level=noise_level, shots=shots, use_gpu=use_gpu)
                 empirical = process_gaussian_counts(counts)
                 
@@ -523,7 +524,8 @@ def run_single_noise_experiment(experiment_type, layers, noise_level, shots, lam
     if experiment_type == "gaussian":
         # Gaussian distribution
         target = binomial_target(layers)
-        circuit = build_qgb_gaussian(layers, np.pi/2)
+        angles = angles_for_binomial(layers, p=0.5)
+        circuit = build_qgb_gaussian(layers, angles)
         counts = simulate_noisy(circuit, noise_level=noise_level, shots=shots, use_gpu=use_gpu)
         empirical = process_gaussian_counts(counts)
         
@@ -605,7 +607,8 @@ def ensure_hadamard_layer_data(layer_results, shots, use_gpu=True):
                     'kl': result['metrics']['kl'],
                     'wasserstein': result['metrics']['wasserstein'],
                     'empirical': result['empirical'],
-                    'target': result['target']
+                    'target': result['target'],
+                    'bootstrap': result['bootstrap_results']
                 }
                 print(f"      ✅ Regenerated layer {layer} {noise_level} noise")
             except Exception as e:
@@ -840,7 +843,8 @@ Examples:
                         'kl': result['metrics']['kl'],
                         'wasserstein': result['metrics']['wasserstein'],
                         'empirical': result['empirical'],
-                        'target': result['target']
+                        'target': result['target'],
+                        'bootstrap': result['bootstrap_results']
                     }
             
             # Save Gaussian data
@@ -877,7 +881,8 @@ Examples:
                         'kl': result['metrics']['kl'],
                         'wasserstein': result['metrics']['wasserstein'],
                         'empirical': result['empirical'],
-                        'target': result['target']
+                        'target': result['target'],
+                        'bootstrap': result['bootstrap_results']
                     }
             
             # Save Exponential data

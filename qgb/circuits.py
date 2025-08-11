@@ -391,6 +391,24 @@ def counts_to_bins(counts: dict, L: int) -> np.ndarray:
     return bins
 
 
+def angles_for_binomial(layers: int, p: float = 0.5) -> List[float]:
+    """
+    Calculate coin angles for binomial distribution.
+    
+    For binomial distribution B(n,p), we use the same angle at each layer.
+    The angle is determined by the probability p of moving right.
+    
+    Args:
+        layers: Number of layers (n)
+        p: Probability of moving right (default: 0.5 for fair coin)
+        
+    Returns:
+        List[float]: Coin angles for each layer (all the same)
+    """
+    theta = 2 * np.arcsin(np.sqrt(p))
+    return [theta] * layers
+
+
 def angles_for_hadamard_walk(target_probs: np.ndarray) -> List[float]:
     """
     Calculate coin angles for Hadamard quantum walk using absorption chain method.
