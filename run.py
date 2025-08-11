@@ -806,7 +806,8 @@ Examples:
                         'kl': result['metrics']['kl'],
                         'wasserstein': result['metrics']['wasserstein'],
                         'empirical': result['empirical'],
-                        'target': result['target']
+                        'target': result['target'],
+                        'bootstrap': result['bootstrap_results']
                     }
             
             # Save Hadamard data
