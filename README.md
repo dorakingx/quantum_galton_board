@@ -10,7 +10,7 @@ This project implements a quantum version of the classical Galton board, capable
 - **Exponential distributions** (biased pegs)
 - **Hadamard quantum walk distributions** (quantum interference patterns)
 
-The implementation supports both coherent and depth-optimized tree modes, with noise modeling and error mitigation capabilities.
+The implementation supports both coherent and depth-optimized tree modes, with comprehensive noise modeling, statistical error analysis, and advanced visualization capabilities.
 
 ## 🏗️ Architecture
 
@@ -51,20 +51,43 @@ pip install pytest>=7.0 black>=23.0 ruff>=0.1.0
 
 ## 📖 Usage
 
-### Simple Interface
+### Unified Experiment Runner
 
-For quick experiments, use the simplified runner:
+For comprehensive experiments with all distributions and visualizations:
 
 ```bash
-# Run all experiments in one execution
-python run.py all --layers 8
-python run.py all --layers 8 --lambda 0.5 --steps 8
+# Run unified experiment with all distributions (layers 2, 4, 6, 8)
+python run.py unified
 
-# With noise and plots
-python run.py all --layers 6 --noisy --plot
+# Run with CPU (if GPU not available)
+python run.py unified --use-cpu
 
-# Generate all visualizations
-python run.py visualize
+# Run with GPU acceleration
+python run.py unified --use-gpu
+```
+
+### Individual Distribution Experiments
+
+```bash
+# Gaussian distribution
+python run.py gaussian --layers 8 --shots 20000
+
+# Exponential distribution
+python run.py exponential --layers 8 --lambda 0.35 --shots 20000
+
+# Hadamard quantum walk
+python run.py hadamard --layers 8 --shots 20000
+```
+
+### Visualization
+
+```bash
+# Generate all visualizations from latest results
+python visualize.py
+
+# Generate specific visualizations
+python visualize.py --distance-scaling
+python visualize.py --layer-comparison
 ```
 
 ### Full Command Line Interface
@@ -79,7 +102,7 @@ python -m qgb gaussian --layers 12 --shots 20000 --mode coherent
 python -m qgb exponential --layers 10 --lambda 0.35 --mode tree --noisy
 
 # Hadamard quantum walk experiment
-python -m qgb hadamard --steps 12 --mode tree --noisy --optimize --plot
+python -m qgb hadamard --steps 12 --mode tree --noisy --plot
 ```
 
 ### CLI Options
@@ -89,7 +112,7 @@ python -m qgb hadamard --steps 12 --mode tree --noisy --optimize --plot
 - `--mode`: Circuit mode (`coherent` or `tree`, default: `tree`)
 - `--noisy`: Enable noisy simulation
 - `--backend`: Fake backend name for noise simulation
-- `--noise-level`: Noise level (`low`, `medium`, `high`, default: `medium`)
+- `--noise-level`: Noise level (`noiseless`, `low`, `high`, default: `low`)
 - `--optimize`: Enable angle optimization
 - `--plot`: Generate plots
 - `--seed`: Random seed (default: 123)
@@ -104,6 +127,8 @@ python -m qgb hadamard --steps 12 --mode tree --noisy --optimize --plot
 
 #### Hadamard Experiment
 - `--steps`: Number of walk steps (default: 12)
+- `--init`: Initial coin state (`symmetric` or `zero`, default: `symmetric`)
+- `--tree-kind`: Angle synthesis method (`absorption` or `binary`, default: `absorption`)
 
 ### Python API
 
@@ -150,11 +175,26 @@ results = bootstrap_metrics(counts, target, n_boot=1000)
 
 ### Noise Modeling
 
-Support for realistic quantum hardware noise:
+Support for realistic quantum hardware noise with unified noise levels:
 
+- **Noiseless**: Pure quantum simulation without noise
+- **Low Noise**: Minimal noise conditions
+- **High Noise**: High noise conditions
+
+The implementation supports:
 - **Fake Backends**: Integration with Qiskit fake providers
 - **Custom Noise Models**: Depolarizing, amplitude/phase damping, readout errors
 - **Error Mitigation**: Measurement error mitigation and twirling options
+
+### Advanced Visualization
+
+Comprehensive visualization system with statistical error bars:
+
+- **Layer Comparison Plots**: Target vs empirical distributions for each layer
+- **Distance Layer Scaling**: Distance metrics vs layer count with confidence intervals
+- **Combined Visualizations**: All distributions and metrics in unified plots
+- **Statistical Error Bars**: 95% confidence intervals for all distance metrics
+- **Offset Plotting**: Horizontal offsets prevent error bar overlap
 
 ### Angle Optimization
 
@@ -164,7 +204,7 @@ Automatic angle pre-compensation for noise reduction:
 from qgb import optimize_for_gaussian
 
 optimized_angles, optimized_tv = optimize_for_gaussian(
-    layers=8, noise_level="medium", shots=5000
+    layers=8, noise_level="high", shots=5000
 )
 ```
 
@@ -181,6 +221,7 @@ pytest tests/ -v
 - **Target Distributions**: Verification of probability normalization and expected shapes
 - **Distance Metrics**: Validation of metric properties and edge cases
 - **Quantum Circuits**: Circuit construction and Gaussian convergence tests
+- **Hadamard Quantum Walk**: Angle synthesis and target distribution validation
 
 ## 📈 Examples
 
@@ -202,20 +243,22 @@ The `examples/` directory contains quick start scripts:
 ### Expected Results
 
 #### Gaussian Distribution
-- **Layers**: 12
+- **Layers**: 2, 4, 6, 8
 - **Expected TV Distance**: < 0.05 (noiseless)
 - **Shape**: Bell curve (binomial ≈ Gaussian)
+- **Angle Calculation**: Uses `angles_for_binomial` for correct binomial distribution
 
 #### Exponential Distribution
-- **Layers**: 10
+- **Layers**: 2, 4, 6, 8
 - **Lambda**: 0.35
 - **Expected Shape**: Exponential decay
 - **Optimization**: Reduces TV distance under noise
 
 #### Hadamard Quantum Walk
-- **Steps**: 12
-- **Expected Shape**: Characteristic peaks and valleys
-- **Features**: Quantum interference patterns
+- **Layers**: 2, 4, 6, 8
+- **Expected Shape**: Characteristic peaks and valleys with quantum interference
+- **Features**: Absorption chain implementation with N+1 bins for N layers
+- **Target Distribution**: Pre-calculated theoretical distributions for specific layers
 
 ## 🔬 Technical Details
 
@@ -239,6 +282,15 @@ For arbitrary target distributions, the implementation uses a binary splitting a
 1. Calculate right subtree mass ratio
 2. Set rotation angle: θ = 2·arcsin(√r)
 3. Recursively apply to left and right subtrees
+
+#### Hadamard Quantum Walk Implementation
+
+The Hadamard quantum walk uses an absorption chain approach:
+
+- **Layers**: N layers produce N+1 bins (positions 0 to N)
+- **Angle Synthesis**: Absorption chain method for angle calculation
+- **Target Distribution**: Pre-calculated theoretical distributions for layers 2, 4, 6, 8
+- **Decoding**: `process_tree_counts` with `num_layers` parameter for correct binning
 
 #### Exponential Distribution Mapping
 
@@ -275,6 +327,15 @@ The optimization module implements grid search for angle pre-compensation:
 2. Select angles that minimize distance under noise
 3. Iterate until convergence
 
+### Statistical Error Analysis
+
+All distance metrics include bootstrap confidence intervals:
+
+- **Bootstrap Resampling**: 1000 resamples for robust statistics
+- **95% Confidence Intervals**: Lower and upper bounds for each metric
+- **Error Bar Visualization**: Statistical uncertainty displayed in all plots
+- **Offset Plotting**: Horizontal offsets prevent error bar overlap
+
 ## 📁 Project Structure
 
 ```
@@ -294,11 +355,47 @@ quantum_galton_board/
 ├── examples/               # Example scripts
 ├── outputs/                # Generated plots and results
 │   └── YYYYMMDD_HHMMSS/    # Timestamped run folders
-├── run.py                  # Simple experiment runner
-├── visualize.py            # Unified visualization script
+├── run.py                  # Unified experiment runner
+├── visualize.py            # Comprehensive visualization script
 ├── pyproject.toml          # Project configuration
 └── README.md               # This file
 ```
+
+## 🔧 Recent Updates
+
+### Latest Improvements (2025-08-11)
+
+1. **Statistical Error Visualization**:
+   - Added bootstrap confidence intervals (95% CI) for all distance metrics
+   - Implemented error bar plotting in all distance scaling visualizations
+   - Added horizontal offsets to prevent error bar overlap between noise levels
+
+2. **Unified Noise Levels**:
+   - Standardized noise levels: `noiseless`, `low`, `high`
+   - Updated all plotting functions with unified color scheme
+   - Consistent noise level handling across all distributions
+
+3. **Hadamard Quantum Walk Enhancements**:
+   - Fixed target distribution calculation for layers 2, 4, 6, 8
+   - Implemented absorption chain angle synthesis
+   - Corrected bin indexing (N+1 bins for N layers)
+   - Added proper statistical error analysis
+
+4. **Gaussian Distribution Corrections**:
+   - Implemented `angles_for_binomial` for correct binomial distribution
+   - Fixed angle calculation in Gaussian QGB implementation
+   - Ensured proper target-empirical distribution matching
+
+5. **Visualization Improvements**:
+   - Target distributions displayed as line graphs (not bar charts)
+   - Integer x-axis ticks for all layer comparison plots
+   - Unified output directory structure with timestamped folders
+   - Comprehensive combined visualizations
+
+6. **Data Management**:
+   - Bootstrap results saved for all distributions
+   - Automatic data regeneration for missing or outdated results
+   - Robust data loading with fallback mechanisms
 
 ## 📚 References
 
@@ -325,7 +422,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - **Advanced Error Mitigation**: Zero-noise extrapolation, PEC
 - **Distribution Synthesis**: Support for arbitrary target distributions
 - **Performance Optimization**: Circuit compilation and transpilation
-- **Visualization**: Interactive circuit diagrams and real-time plots
+- **Interactive Visualization**: Real-time plots and circuit diagrams
+- **Extended Statistical Analysis**: Additional confidence interval methods
 
 ## 📞 Support
 
@@ -336,4 +434,4 @@ For questions and support:
 
 ---
 
-**Note**: This implementation is based on the theoretical framework described in the Carney-Varcoe paper. For production use, consider hardware-specific optimizations and error mitigation strategies. 
+**Note**: This implementation is based on the theoretical framework described in the Carney-Varcoe paper. For production use, consider hardware-specific optimizations and error mitigation strategies. The latest version includes comprehensive statistical error analysis and improved visualization capabilities. 
