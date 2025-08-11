@@ -742,6 +742,9 @@ def create_distance_layer_scaling_plot(results, output_dir):
                     layers.extend([int(l) for l in layer_data[level].keys() if 1 <= int(l) <= 8])
             layers = sorted(list(set(layers)))
             
+            # Define offset for each noise level to prevent overlap
+            offsets = {'noiseless': -0.1, 'low': 0.0, 'high': 0.1}
+            
             for level in noise_levels:
                 if level not in layer_data:
                     continue
@@ -772,12 +775,15 @@ def create_distance_layer_scaling_plot(results, output_dir):
                             metric_errors.append(0)
                 
                 if metric_values:
+                    # Apply offset to x-coordinates to prevent overlap
+                    offset_layers = [layer + offsets[level] for layer in available_layers]
+                    
                     if any(metric_errors):  # If we have error bars
-                        ax.errorbar(available_layers, metric_values, yerr=metric_errors, 
+                        ax.errorbar(offset_layers, metric_values, yerr=metric_errors, 
                                   fmt='o-', label=f'{level.title()} Noise', color=colors[level], 
                                   linewidth=2, markersize=6, capsize=5, capthick=2)
                     else:  # Fallback to regular plot
-                        ax.plot(available_layers, metric_values, 'o-', 
+                        ax.plot(offset_layers, metric_values, 'o-', 
                                label=f'{level.title()} Noise', color=colors[level], 
                                linewidth=2, markersize=6)
             
@@ -818,6 +824,9 @@ def create_combined_distance_layer_scaling_plot(results, output_dir):
                 layers.extend([int(l) for l in layer_data[level].keys()])
         layers = sorted(list(set(layers)))
         
+        # Define offset for each noise level to prevent overlap
+        offsets = {'noiseless': -0.1, 'low': 0.0, 'high': 0.1}
+        
         for j, metric in enumerate(metrics):
             ax = axes[i, j]
             
@@ -851,12 +860,15 @@ def create_combined_distance_layer_scaling_plot(results, output_dir):
                             metric_errors.append(0)
                 
                 if metric_values:
+                    # Apply offset to x-coordinates to prevent overlap
+                    offset_layers = [layer + offsets[level] for layer in available_layers]
+                    
                     if any(metric_errors):  # If we have error bars
-                        ax.errorbar(available_layers, metric_values, yerr=metric_errors, 
+                        ax.errorbar(offset_layers, metric_values, yerr=metric_errors, 
                                   fmt='o-', label=f'{level.title()} Noise', color=colors[level], 
                                   linewidth=2, markersize=6, capsize=5, capthick=2)
                     else:  # Fallback to regular plot
-                        ax.plot(available_layers, metric_values, 'o-', 
+                        ax.plot(offset_layers, metric_values, 'o-', 
                                label=f'{level.title()} Noise', color=colors[level], 
                                linewidth=2, markersize=6)
             
